@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.PetDTO;
+import com.example.demo.PetResponse;
 import com.example.demo.repository.PetClient;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -40,5 +41,27 @@ public class PetService {
             throw new RuntimeException("Error procesando JSON", e);
         }
 
+    }
+    public PetResponse createPet(PetDTO petDTO) throws JsonProcessingException {
+
+        String jsonRequest = objectMapper.writeValueAsString(petDTO);
+
+        String jsonResponse = petClient.createPet(jsonRequest).block();
+
+        log.info("Response POST: {}", jsonResponse);
+
+        JsonNode root = objectMapper.readTree(jsonResponse);
+        // fecha de hoy en la variable dateCreated
+        String dateCreated = java.time.LocalDate.now().toString();
+        //Generar el campo del response “transactionId” con un formato de
+        //UUIDv4 en la capa service.
+
+        String transactionId = java.util.UUID.randomUUID().toString();
+        PetDTO responseDto = new PetDTO();
+        responseDto.setId(root.get("id").asLong());
+        responseDto.setName(root.get("name").asText());
+        responseDto.setStatus(root.get("status").asText());
+
+        return new PetResponse(responseDto, dateCreated,transactionId);
     }
 }

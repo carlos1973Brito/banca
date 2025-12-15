@@ -1,6 +1,8 @@
 package com.example.demo.controller;
 
 
+import com.example.demo.PetDTO;
+import com.example.demo.PetResponse;
 import com.example.demo.service.PetService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
@@ -18,4 +20,12 @@ public class PetController {
         return petService.fetchPetDetails(petId)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());    }
+
+    @PostMapping("/pets")
+    public ResponseEntity<PetResponse> createPet(@RequestBody PetDTO dto)
+            throws JsonProcessingException {
+
+        PetResponse saved = petService.createPet(dto);
+        return ResponseEntity.ok(saved);
+    }
 }
