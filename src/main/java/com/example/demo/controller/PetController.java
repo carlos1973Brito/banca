@@ -15,6 +15,7 @@ public class PetController {
     private final PetService petService;
     @GetMapping(value = "pet/{petId}")
     public ResponseEntity<?> getPetById(@PathVariable("petId") Long petId) throws JsonProcessingException {
-        return ResponseEntity.ok(petService.fetchPetDetails(petId));
-    }
+        return petService.fetchPetDetails(petId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());    }
 }
